@@ -1,6 +1,6 @@
 module TIS100Parse where
 
-import Prelude
+import Prelude hiding (add, sub)
 
 import Control.Alt ((<|>))
 import Data.Array (many, some)
@@ -43,6 +43,7 @@ data JumpToLabelInstruction =
   | Jgz String
 
 -- just the basic body of a jump instruction without the parameters required to make it a valid instruction
+-- internal use only
 data JumpToLabelToken =
   JmpToken | JezToken | JnzToken | JlzToken | JgzToken
 
@@ -83,7 +84,12 @@ instruction = do
     [ swp
     , nop
     , sav
+    , neg
+    , add
+    , sub
+    , jro
     , jumpToLabel
+    , mov
     ]
   pure $ Instruction instr
 
