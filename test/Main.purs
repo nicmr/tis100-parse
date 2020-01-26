@@ -5,7 +5,7 @@ import Prelude
 import Data.Either (Either(..))
 import Effect (Effect)
 import Effect.Aff (launchAff_)
-import TIS100.Parse (program, Tis100Token(..), InstructionToken(..), RegisterToken(..))
+import Tis100.Parse (program, Tis100Token(..), InstructionToken(..), RegisterToken(..))
 import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual, fail)
 import Test.Spec.Reporter.Console (consoleReporter)

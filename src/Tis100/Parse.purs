@@ -1,4 +1,4 @@
-module TIS100.Parse where
+module Tis100.Parse where
 
 import Prelude hiding (add,sub)
 
