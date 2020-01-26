@@ -1,6 +1,6 @@
-module TIS100Parse where
+module TIS100.Parse where
 
-import Prelude hiding (add, sub)
+import Prelude hiding (add,sub)
 
 import Control.Alt ((<|>))
 import Data.Array (many, some)
@@ -21,6 +21,18 @@ data Tis100Token =
   Instruction InstructionToken
   | Label String
   | Comment String
+
+instance showTis100Token :: Show Tis100Token where
+  show token =
+    case token of
+        Instruction _ -> "Instruction"
+        Label l -> "Label " <> l
+        Comment c-> "Comment " <> c
+
+derive instance eqTis100Token :: Eq Tis100Token
+derive instance eqInstructionToken :: Eq InstructionToken
+derive instance eqRegisterToken :: Eq RegisterToken
+derive instance eqJumpToLabelInstruction :: Eq JumpToLabelInstruction
 
 -- A single instruction
 data InstructionToken =
@@ -51,7 +63,7 @@ data JumpToLabelToken =
 -- register 'BAK' is non-adressable so it's omitted
 -- also includes support for constant integers, which may be used in place of all registers
 data RegisterToken =
-  Acc | Left | Right | Up | Down | Any | Last | Nil 
+  Acc | Left' | Right' | Up | Down | Any | Last | Nil 
   | Constant Int
 
 main :: Effect Unit
@@ -72,8 +84,9 @@ label = do
 comment :: Parser String Tis100Token
 comment = do
   skipSpaces
-  _ <- string "--"
-  c <- many $ satisfy asciiAlpha
+  _ <- string "#"
+  -- c <- many $ satisfy asciiAlpha
+  c <- many $ satisfy (\char -> char /= '\n' )
   _ <- string "\n"
   pure $ Comment (fromCharArray c)
 
@@ -168,7 +181,9 @@ jumpToLabelInstruction = do
 mov :: Parser String InstructionToken
 mov = do
   _ <- string "mov"
+  skipSpaces
   from <- registerToken
+  skipSpaces
   to <- registerToken
   pure $ Mov from to
 
@@ -183,8 +198,8 @@ registerToken = normalRegister <|> constInteger
 normalRegister :: Parser String RegisterToken
 normalRegister = do
   reg <- (string "acc" >>= \_ -> pure Acc)
-        <|> (string "left" >>= \_ -> pure Left)
-        <|> (string "right" >>= \_ -> pure Right)
+        <|> (string "left'" >>= \_ -> pure Left')
+        <|> (string "Right'" >>= \_ -> pure Right')
         <|> (string "up" >>= \_ -> pure Up)
         <|> (string "down" >>= \_ -> pure Down)
         <|> (string "nil" >>= \_ -> pure Nil)
