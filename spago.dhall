@@ -5,7 +5,7 @@ You can edit this file as you like.
 { name =
     "my-project"
 , dependencies =
-    [ "console", "effect", "parsing", "psci-support" ]
+    [ "console", "effect", "parsing", "psci-support", "spec" ]
 , packages =
     ./packages.dhall
 , sources =
