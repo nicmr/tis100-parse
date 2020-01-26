@@ -12,7 +12,7 @@ import Effect (Effect)
 import Effect.Console (log)
 import Text.Parsing.Parser (Parser, failWithPosition, position)
 import Text.Parsing.Parser.Combinators (choice, optionMaybe)
-import Text.Parsing.Parser.String (satisfy, skipSpaces, string)
+import Text.Parsing.Parser.String (satisfy, skipSpaces, string, eof)
 
 -- import Text.Parsing.Parser.Combinators (endBy1, sepBy1, optionMaybe, try, chainl, between)
 
@@ -87,8 +87,15 @@ comment = do
   _ <- string "#"
   -- c <- many $ satisfy asciiAlpha
   c <- many $ satisfy (\char -> char /= '\n' )
-  _ <- string "\n"
+  _ <- string "\n" <|> eofString
   pure $ Comment (fromCharArray c)
+
+-- parses eof and returns an empty string
+-- so it can be easily combined with other string parsers
+eofString :: Parser String String
+eofString = do
+  _ <- eof
+  pure ""
 
 instruction :: Parser String Tis100Token
 instruction = do
